@@ -1,0 +1,70 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url5 = requests.get('https://github.com/topics/flask').text
+print(url5)
+
+soup = BeautifulSoup(url5,'lxml')
+print(soup)
+
+first_div = soup.find('article',class_='border rounded color-shadow-small color-bg-subtle my-4')
+print(first_div)
+
+repository_name = first_div.find('a',class_='text-bold wb-break-word').text
+print(repository_name)
+
+user_name = first_div.find('a').text
+print(user_name)
+
+s = first_div.find('a',class_='tooltipped tooltipped-s btn-sm btn BtnGroup-item color-bg-default')
+star = s.find('span',class_='Counter js-social-count').text
+print(star)
+
+link = "https://github.com/"
+url = first_div.find("a", class_='text-bold wb-break-word')['href']
+url = link+url
+print(url)
+
+# printing all divs data
+all_divs = soup.find_all('article',class_='border rounded color-shadow-small color-bg-subtle my-4')
+url_link5 =  "https://github.com/topics/flask?page="
+
+dict5 = []
+for data in range(1,8):
+    dict5.append(url_link5+str(data))
+    print(dict5)
+
+github_link5 = "https://github.com/"
+
+all_data_list=[]
+for item in dict5:
+    all_raw_data = requests.get(item).text
+    all_soup = BeautifulSoup(all_raw_data,'lxml')
+    all_divs = all_soup.find_all('article',class_='border rounded color-shadow-small color-bg-subtle my-4')
+    for data in all_divs:
+        repository_name = data.find('a',class_='text-bold wb-break-word').text
+        user = data.find("h3",class_="f3 color-fg-muted text-normal lh-condensed")
+        user_name = user.find("a").text
+        star = data.find("a",class_='tooltipped tooltipped-s btn-sm btn BtnGroup-item color-bg-default')
+        Stars = star.find('span',class_='Counter js-social-count').text
+        l5 = data.find("a", class_='text-bold wb-break-word')['href']
+        link = github_link5+l5
+
+        all_flask_data = {
+        'Repository Name': repository_name,
+        'User Name': user_name,
+        'Stars' : Stars,
+        'URL': link
+        }
+
+        all_data_list.append( all_flask_data)
+        print( all_flask_data)
+
+        all_data_list = all_data_list[0:200]
+        print(all_data_list)
+
+        data = pd.DataFrame(all_data_list)
+        print(data)
+
+        data.to_excel('Flask Data.xlsx')

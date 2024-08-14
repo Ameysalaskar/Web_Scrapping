@@ -1,0 +1,74 @@
+print('hello')
+
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+from bs4 import BeautifulSoup
+raw_data = requests.get('https://github.com/topics/python').text
+#print(raw_data)
+
+#print(type(raw_data))
+soup = BeautifulSoup(raw_data,'lxml')
+#print(soup)
+#print(type(soup))
+
+
+first_div = soup.find('article',class_='border rounded color-shadow-small color-bg-subtle my-4')
+('''
+#print(first_div)
+
+user_name = first_div.find("a").text
+
+print(user_name)
+
+
+
+
+Repository_name = first_div.find("a",class_="text-bold wb-break-word").text
+print(Repository_name)
+
+Star = first_div.find("a",class_='tooltipped tooltipped-s btn-sm btn BtnGroup-item color-bg-default')
+Stars = Star.find('span',class_='Counter js-social-count').text
+print(Stars)
+
+b_link = "https://github.com/"
+u_link = first_div.find("a", class_='text-bold wb-break-word')['href']
+u_link = b_link+u_link
+print(u_link)
+
+
+''')
+
+all_divs = soup.find_all('article',class_='border rounded color-shadow-small color-bg-subtle my-4')
+
+b_link ="https://github.com/topics/python"
+
+all_python_1=[]
+
+for item in all_divs:
+   
+    user_name = first_div.find("a").text#print(user_name)
+    Repository_name = first_div.find("a",class_="text-bold wb-break-word").text#print(Repository_name)
+    Star = first_div.find("a",class_='tooltipped tooltipped-s btn-sm btn BtnGroup-item color-bg-default')
+    Stars = Star.find('span',class_='Counter js-social-count').text
+#print(Stars)
+    b_link = "https://github.com/"
+    u1_link = first_div.find("a", class_='text-bold wb-break-word')['href']
+    u1_link = b_link+u1_link
+
+    page_1 = {
+       'Repository Name': Repository_name,
+        'User Name': user_name,
+        'Stars' : Stars,
+        'URL': u1_link
+
+      }
+    all_python_1.append(page_1)
+    print(all_python_1)
+
+
+demy = pd.DataFrame(all_python_1)
+demy.to_excel('dem1.xlsx')
+
+#print(pwd)
+print(demy)
